@@ -33,7 +33,7 @@ func main() {
 		panic(err)
 	}
 
-	data := fmt.Sprintf("package %s\n\nvar %s = \"%s\"", pack, args[1], b64)
+	data := fmt.Sprintf("package %s\n\n//%s static archive\nvar %s = \"%s\"", pack, args[1], args[1], b64)
 	err = ioutil.WriteFile(pack+"_static.go", []byte(data), os.ModePerm)
 	if err != nil {
 		panic(err)

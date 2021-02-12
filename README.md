@@ -5,7 +5,7 @@ _Library for embedding static files inside an application_
 # Install as tool
 
 ```bash
-go get -u github.com/deweppro/go-static
+go get -u github.com/deweppro/go-static/...
 ```
 
 # Packaging
