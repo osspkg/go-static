@@ -57,15 +57,21 @@ func (c *Cache) FromFile(filename string) error {
 
 //FromDir ...
 func (c *Cache) FromDir(dir string) error {
+	if v, err := filepath.Abs(dir); err == nil {
+		dir = v
+	} else {
+		return err
+	}
 	return filepath.Walk(dir, func(path string, info os.FileInfo, _ error) error {
 		if info.IsDir() {
 			return nil
 		}
-		v, err := ioutil.ReadFile(path)
-		if err != nil {
+		if b, err := ioutil.ReadFile(path); err != nil {
 			return err
+		} else {
+			path = strings.TrimPrefix(path, dir)
+			c.Set(path, b)
 		}
-		c.Set(path, v)
 		return nil
 	})
 }
