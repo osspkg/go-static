@@ -58,7 +58,7 @@ func (c *Cache) FromFile(filename string) error {
 //FromDir ...
 func (c *Cache) FromDir(dir string) error {
 	if v, err := filepath.Abs(dir); err == nil {
-		dir = v
+		dir = v + "/"
 	} else {
 		return err
 	}

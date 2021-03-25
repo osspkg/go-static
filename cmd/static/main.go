@@ -17,6 +17,10 @@ func init() {
 	//%s static archive
 	%s = "%s"
 }
+
+/* FILES:
+%s
+*/
 `
 
 func main() {
@@ -42,7 +46,7 @@ func main() {
 		panic(err)
 	}
 
-	data := fmt.Sprintf(template, pack, args[1], args[1], b64)
+	data := fmt.Sprintf(template, pack, args[1], args[1], b64, strings.Join(cache.List(), "\n"))
 	err = ioutil.WriteFile(pack+"_static.go", []byte(data), os.ModePerm)
 	if err != nil {
 		panic(err)
