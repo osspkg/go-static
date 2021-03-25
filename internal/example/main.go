@@ -8,6 +8,8 @@ import (
 
 //go:generate static ./.. UI
 
+var UI = ""
+
 func run() {
 	cache := static.New()
 	if err := cache.FromBase64TarGZ(UI); err != nil {
