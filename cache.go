@@ -1,7 +1,6 @@
 package static
 
 import (
-	"strings"
 	"sync"
 )
 
@@ -31,10 +30,6 @@ func (c *Cache) Set(filename string, v []byte) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	if !strings.HasPrefix(filename, "/") {
-		filename = "/" + filename
-	}
-
 	c.files[filename] = v
 }
 
@@ -42,10 +37,6 @@ func (c *Cache) Set(filename string, v []byte) {
 func (c *Cache) Get(filename string) []byte {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
-
-	if !strings.HasPrefix(filename, "/") {
-		filename = "/" + filename
-	}
 
 	b, ok := c.files[filename]
 	if !ok {
