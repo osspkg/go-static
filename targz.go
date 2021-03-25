@@ -43,7 +43,7 @@ func (c *Cache) FromTarArchive(r io.Reader) error {
 		if err != nil {
 			return err
 		}
-		c.Set("/"+hdr.Name, b)
+		c.Set(hdr.Name, b)
 	}
 	return nil
 }
