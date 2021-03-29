@@ -1,6 +1,7 @@
 package static
 
 import (
+	"net/http"
 	"sync"
 )
 
@@ -34,15 +35,29 @@ func (c *Cache) Set(filename string, v []byte) {
 }
 
 //Get getting file by name
-func (c *Cache) Get(filename string) []byte {
+func (c *Cache) Get(filename string) ([]byte, string) {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
 	b, ok := c.files[filename]
 	if !ok {
+		return nil, ""
+	}
+	return b, DetectContentType(filename, b)
+}
+
+//Write write file to response
+func (c *Cache) Write(filename string, w http.ResponseWriter) error {
+	b, ct := c.Get(filename)
+	if b == nil {
+		w.WriteHeader(http.StatusNotFound)
 		return nil
 	}
-	return b
+
+	w.Header().Set("Content-Type", ct)
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write(b)
+	return err
 }
 
 //List getting all files list
