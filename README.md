@@ -20,13 +20,7 @@ go install github.com/deweppro/go-static/cmd/static@latest
 ```
 
 * DIR - Path to the static folder
-* VAR - A variable containing an archive in base64 format
-
-## Example
-
-```go
-//go:generate static ./../../ui UI
-```
+* VAR - A variable containing `static.Reader` interface
 
 ## Example go code
 
@@ -39,14 +33,11 @@ import (
 	"github.com/deweppro/go-static"
 )
 
-//go:generate static ./.. UI
+//go:generate static ./.. ui
+
+var ui static.Reader
 
 func run() {
-	cache := static.New()
-	if err := cache.FromBase64TarGZ(UI); err != nil {
-		panic(err)
-	}
-
-	fmt.Println(cache.List())
+	fmt.Println(ui.List())
 }
 ```
