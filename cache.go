@@ -2,8 +2,14 @@ package static
 
 import (
 	"net/http"
+	"sort"
 	"sync"
 )
+
+type Reader interface {
+	Get(filename string) ([]byte, string)
+	List() []string
+}
 
 //Cache model
 type Cache struct {
@@ -69,5 +75,6 @@ func (c *Cache) List() []string {
 	for name := range c.files {
 		result = append(result, name)
 	}
+	sort.Strings(result)
 	return result
 }

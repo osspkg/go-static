@@ -5,9 +5,12 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+
+	"github.com/deweppro/go-errors"
 )
 
 //FromBase64TarGZ ...
@@ -51,20 +54,23 @@ func (c *Cache) FromTarArchive(r io.Reader) error {
 //ToTarGZArchive ...
 func (c *Cache) ToTarGZArchive(w io.Writer) error {
 	gw := gzip.NewWriter(w)
-	defer gw.Close()
 	err := c.ToTarArchive(gw)
-	return err
+	return errors.Wrap(err, gw.Close())
 }
 
 //ToTarArchive ...
 func (c *Cache) ToTarArchive(w io.Writer) error {
 	tw := tar.NewWriter(w)
-	defer tw.Close()
+	defer tw.Close() //nolint:errcheck
 
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
-	for name, v := range c.files {
+	for _, name := range c.List() {
+		v, ok := c.files[name]
+		if !ok {
+			return fmt.Errorf("file not found: %s", name)
+		}
 		hdr := &tar.Header{
 			Name: name,
 			Mode: int64(os.ModePerm),

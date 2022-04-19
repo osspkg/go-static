@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/deweppro/go-errors"
 )
 
 var (
@@ -20,10 +20,8 @@ func (c *Cache) fileCreate(filename string, call func(r io.Writer) error) error 
 	if err != nil {
 		return err
 	}
-	defer v.Close()
-
 	err = call(v)
-	return err
+	return errors.Wrap(err, v.Close())
 }
 
 func (c *Cache) fileOpen(filename string, call func(r io.Reader) error) error {
@@ -31,10 +29,8 @@ func (c *Cache) fileOpen(filename string, call func(r io.Reader) error) error {
 	if err != nil {
 		return err
 	}
-	defer v.Close()
-
 	err = call(v)
-	return err
+	return errors.Wrap(err, v.Close())
 }
 
 //FromFile ...
@@ -64,6 +60,9 @@ func (c *Cache) FromDir(dir string) error {
 	}
 	return filepath.Walk(dir, func(path string, info os.FileInfo, _ error) error {
 		if info.IsDir() {
+			return nil
+		}
+		if strings.HasSuffix(path, "_static.go") {
 			return nil
 		}
 		if b, err := ioutil.ReadFile(path); err != nil {
