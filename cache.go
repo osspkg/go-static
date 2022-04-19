@@ -9,6 +9,8 @@ import (
 type Reader interface {
 	Get(filename string) ([]byte, string)
 	List() []string
+
+	ResponseWrite(w http.ResponseWriter, filename string) error
 }
 
 //Cache model
@@ -53,7 +55,7 @@ func (c *Cache) Get(filename string) ([]byte, string) {
 }
 
 //Write write file to response
-func (c *Cache) Write(filename string, w http.ResponseWriter) error {
+func (c *Cache) ResponseWrite(w http.ResponseWriter, filename string) error {
 	b, ct := c.Get(filename)
 	if b == nil {
 		w.WriteHeader(http.StatusNotFound)
