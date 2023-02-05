@@ -7,13 +7,10 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
-
-	"github.com/deweppro/go-errors"
 )
 
-//FromBase64TarGZ ...
+// FromBase64TarGZ ...
 func (c *Cache) FromBase64TarGZ(v string) error {
 	b64, err := base64.StdEncoding.DecodeString(v)
 	if err != nil {
@@ -22,7 +19,7 @@ func (c *Cache) FromBase64TarGZ(v string) error {
 	return c.FromTarGZArchive(bytes.NewBuffer(b64))
 }
 
-//FromTarGZArchive ...
+// FromTarGZArchive ...
 func (c *Cache) FromTarGZArchive(r io.Reader) error {
 	gzf, err := gzip.NewReader(r)
 	if err != nil {
@@ -31,7 +28,7 @@ func (c *Cache) FromTarGZArchive(r io.Reader) error {
 	return c.FromTarArchive(gzf)
 }
 
-//FromTarArchive ...
+// FromTarArchive ...
 func (c *Cache) FromTarArchive(r io.Reader) error {
 	tr := tar.NewReader(r)
 	for {
@@ -42,7 +39,7 @@ func (c *Cache) FromTarArchive(r io.Reader) error {
 		if err != nil {
 			return err
 		}
-		b, err := ioutil.ReadAll(tr)
+		b, err := io.ReadAll(tr)
 		if err != nil {
 			return err
 		}
@@ -51,20 +48,26 @@ func (c *Cache) FromTarArchive(r io.Reader) error {
 	return nil
 }
 
-//ToTarGZArchive ...
+// ToTarGZArchive ...
 func (c *Cache) ToTarGZArchive(w io.Writer) error {
 	gw := gzip.NewWriter(w)
 	err := c.ToTarArchive(gw)
-	return errors.Wrap(err, gw.Close())
+	if err != nil {
+		return err
+	}
+	if err = gw.Close(); err != nil {
+		return err
+	}
+	return nil
 }
 
-//ToTarArchive ...
+// ToTarArchive ...
 func (c *Cache) ToTarArchive(w io.Writer) error {
 	tw := tar.NewWriter(w)
 	defer tw.Close() //nolint:errcheck
 
-	c.lock.RLock()
-	defer c.lock.RUnlock()
+	c.mux.RLock()
+	defer c.mux.RUnlock()
 
 	for _, name := range c.List() {
 		v, ok := c.files[name]
@@ -86,7 +89,7 @@ func (c *Cache) ToTarArchive(w io.Writer) error {
 	return nil
 }
 
-//ToBase64TarGZ ...
+// ToBase64TarGZ ...
 func (c *Cache) ToBase64TarGZ() (string, error) {
 	buf := &bytes.Buffer{}
 	if err := c.ToTarGZArchive(buf); err != nil {

@@ -1,3 +1,4 @@
+
 run:
   concurrency: 1
   deadline: 2m
@@ -48,3 +49,4 @@ linters:
     - gosimple
     - prealloc
   fast: false
+

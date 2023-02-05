@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -58,7 +57,7 @@ func main() {
 	}
 
 	data := fmt.Sprintf(template, pack, args[1], args[1], b64, strings.Join(cache.List(), "\n"))
-	err = ioutil.WriteFile(pack+"_static.go", []byte(data), os.ModePerm)
+	err = os.WriteFile(pack+"_static.go", []byte(data), os.ModePerm)
 	if err != nil {
 		panic(err.Error())
 	}
