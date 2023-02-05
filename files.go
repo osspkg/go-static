@@ -1,13 +1,12 @@
 package static
 
 import (
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/deweppro/go-errors"
 )
 
 var (
@@ -20,8 +19,13 @@ func (c *Cache) fileCreate(filename string, call func(r io.Writer) error) error 
 	if err != nil {
 		return err
 	}
-	err = call(v)
-	return errors.Wrap(err, v.Close())
+	if err = call(v); err != nil {
+		return err
+	}
+	if err = v.Close(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *Cache) fileOpen(filename string, call func(r io.Reader) error) error {
@@ -29,11 +33,16 @@ func (c *Cache) fileOpen(filename string, call func(r io.Reader) error) error {
 	if err != nil {
 		return err
 	}
-	err = call(v)
-	return errors.Wrap(err, v.Close())
+	if err = call(v); err != nil {
+		return err
+	}
+	if err = v.Close(); err != nil {
+		return err
+	}
+	return nil
 }
 
-//FromFile ...
+// FromFile ...
 func (c *Cache) FromFile(filename string) error {
 	switch true {
 	case strings.HasSuffix(filename, ".tar.gz"):
@@ -51,7 +60,7 @@ func (c *Cache) FromFile(filename string) error {
 	}
 }
 
-//FromDir ...
+// FromDir ...
 func (c *Cache) FromDir(dir string) error {
 	if v, err := filepath.Abs(dir); err == nil {
 		dir = v
@@ -75,7 +84,7 @@ func (c *Cache) FromDir(dir string) error {
 	})
 }
 
-//ToFile ...
+// ToFile ...
 func (c *Cache) ToFile(filename string) error {
 	switch true {
 	case strings.HasSuffix(filename, ".tar.gz"):

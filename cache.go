@@ -13,39 +13,39 @@ type Reader interface {
 	ResponseWrite(w http.ResponseWriter, filename string) error
 }
 
-//Cache model
+// Cache model
 type Cache struct {
 	files map[string][]byte
-	lock  sync.RWMutex
+	mux   sync.RWMutex
 }
 
-//New init cache
+// New init cache
 func New() *Cache {
 	c := &Cache{}
 	c.Reset()
 	return c
 }
 
-//Reset clean cache
+// Reset clean cache
 func (c *Cache) Reset() {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+	c.mux.Lock()
+	defer c.mux.Unlock()
 
 	c.files = make(map[string][]byte)
 }
 
-//Set setting data to cache
+// Set setting data to cache
 func (c *Cache) Set(filename string, v []byte) {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+	c.mux.Lock()
+	defer c.mux.Unlock()
 
 	c.files[filename] = v
 }
 
-//Get getting file by name
+// Get getting file by name
 func (c *Cache) Get(filename string) ([]byte, string) {
-	c.lock.RLock()
-	defer c.lock.RUnlock()
+	c.mux.RLock()
+	defer c.mux.RUnlock()
 
 	b, ok := c.files[filename]
 	if !ok {
@@ -54,7 +54,7 @@ func (c *Cache) Get(filename string) ([]byte, string) {
 	return b, DetectContentType(filename, b)
 }
 
-//Write write file to response
+// Write write file to response
 func (c *Cache) ResponseWrite(w http.ResponseWriter, filename string) error {
 	b, ct := c.Get(filename)
 	if b == nil {
@@ -68,10 +68,10 @@ func (c *Cache) ResponseWrite(w http.ResponseWriter, filename string) error {
 	return err
 }
 
-//List getting all files list
+// List getting all files list
 func (c *Cache) List() []string {
-	c.lock.RLock()
-	defer c.lock.RUnlock()
+	c.mux.RLock()
+	defer c.mux.RUnlock()
 
 	result := make([]string, 0, len(c.files))
 	for name := range c.files {
