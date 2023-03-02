@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/deweppro/go-static"
@@ -30,6 +32,11 @@ func init() {
 */
 `
 
+var (
+	validRex = regexp.MustCompile(`(?i)[^a-z0-9]`)
+	packRex  = regexp.MustCompile(`package ([a-z0-9_]+)`)
+)
+
 func main() {
 	flag.Parse()
 	args := flag.Args()
@@ -43,7 +50,12 @@ func main() {
 	}
 
 	spath := strings.Split(path, "/")
-	pack := spath[len(spath)-1]
+
+	pack, err := extractFromFiles(path)
+	if err != nil {
+		pack = spath[len(spath)-1]
+	}
+	pack = validRex.ReplaceAllString(pack, `_`)
 
 	cache := static.New()
 	err = cache.FromDir(path + "/" + args[0])
@@ -57,8 +69,37 @@ func main() {
 	}
 
 	data := fmt.Sprintf(template, pack, args[1], args[1], b64, strings.Join(cache.List(), "\n"))
-	err = os.WriteFile(pack+"_static.go", []byte(data), os.ModePerm)
+	filename := strings.ToLower(args[1])
+	err = os.WriteFile(filename+"_static.go", []byte(data), os.ModePerm)
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+func extractFromFiles(path string) (string, error) {
+	list, err := filepath.Glob(path + "/*.go")
+	if err != nil {
+		return "", err
+	}
+
+	for _, s := range list {
+		if strings.Contains(s, "_static.go") {
+			continue
+		}
+		if strings.Contains(s, "_test.go") {
+			continue
+		}
+
+		b, err0 := os.ReadFile(s)
+		if err0 != nil {
+			return "", err0
+		}
+
+		result := packRex.FindAllStringSubmatch(string(b), -1)
+		if len(result) == 1 && len(result[0]) == 2 {
+			return result[0][1], nil
+		}
+	}
+
+	return "", fmt.Errorf("empty folder")
 }

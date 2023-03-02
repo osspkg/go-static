@@ -25,3 +25,5 @@ pre-commite: setup lint build tests
 .PHONY: ci
 ci: install setup lint build tests
 
+local:
+	GO111MODULE=on GOOS=linux GOARCH=amd64 go build -o $(GOPATH)/bin/static ./cmd/static/
