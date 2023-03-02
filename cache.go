@@ -54,7 +54,7 @@ func (c *Cache) Get(filename string) ([]byte, string) {
 	return b, DetectContentType(filename, b)
 }
 
-// Write write file to response
+// ResponseWrite write file to response
 func (c *Cache) ResponseWrite(w http.ResponseWriter, filename string) error {
 	b, ct := c.Get(filename)
 	if b == nil {
