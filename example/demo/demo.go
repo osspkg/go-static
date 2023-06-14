@@ -3,7 +3,7 @@ package demo
 import (
 	"fmt"
 
-	"github.com/deweppro/go-static"
+	"github.com/osspkg/go-static"
 )
 
 //go:generate static . ui
