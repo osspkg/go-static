@@ -3,7 +3,7 @@ package static_test
 import (
 	"testing"
 
-	"github.com/deweppro/go-static"
+	"github.com/osspkg/go-static"
 	"github.com/stretchr/testify/require"
 )
 
