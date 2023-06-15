@@ -3,7 +3,6 @@ package static
 import (
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -74,7 +73,7 @@ func (c *Cache) FromDir(dir string) error {
 		if strings.HasSuffix(path, "_static.go") {
 			return nil
 		}
-		if b, err := ioutil.ReadFile(path); err != nil {
+		if b, err := os.ReadFile(path); err != nil {
 			return err
 		} else {
 			path = strings.TrimPrefix(path, dir)
