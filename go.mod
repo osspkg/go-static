@@ -1,4 +1,4 @@
-module github.com/osspkg/go-static
+module go.osspkg.com/static
 
 go 1.17
 

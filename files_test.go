@@ -8,8 +8,8 @@ package static_test
 import (
 	"testing"
 
-	"github.com/osspkg/go-static"
 	"github.com/stretchr/testify/require"
+	"go.osspkg.com/static"
 )
 
 func TestUnit_ReadDir(t *testing.T) {
