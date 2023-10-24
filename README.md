@@ -10,7 +10,7 @@ _Library for embedding static files inside an application_
 # Install as tool
 
 ```bash
-go install github.com/osspkg/go-static/cmd/static@latest
+go install go.osspkg.com/static/cmd/static@latest
 ```
 
 # Packaging
@@ -30,7 +30,7 @@ package example
 import (
 	"fmt"
 
-	"github.com/osspkg/go-static"
+	"go.osspkg.com/static"
 )
 
 //go:generate static ./.. ui

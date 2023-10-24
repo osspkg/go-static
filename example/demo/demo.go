@@ -8,7 +8,7 @@ package demo
 import (
 	"fmt"
 
-	"github.com/osspkg/go-static"
+	"go.osspkg.com/static"
 )
 
 //go:generate static . ui
