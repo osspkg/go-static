@@ -1,3 +1,9 @@
+# <span style="color:red;">!!Archived!!</span>
+
+<span style="color:red;">The package became a part of: [go.osspkg.com/goppy/v3](https://github.com/osspkg/goppy) The current project is no longer supported.</span>
+
+---
+
 # go-static
 
 [![Coverage Status](https://coveralls.io/repos/github/osspkg/go-static/badge.svg?branch=master)](https://coveralls.io/github/osspkg/go-static?branch=master)
